@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <title>High Prime Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f4f4f4;
+      color: #333;
+    }
+    #output {
+      font-size: 1.5rem;
+      margin-top: 1rem;
+      color: #007700;
+    }
+  </style>
+</head>
+<body>
+  <h1>High Prime Generator</h1>
+  <p>This page computes a large prime number when loaded.</p>
+  <div id="output">Calculating...</div>
+
+  <script>
+    function isPrime(n) {
+      if (n < 2) return false;
+      if (n === 2) return true;
+      if (n % 2 === 0) return false;
+      for (let i = 3; i <= Math.sqrt(n); i += 2) {
+        if (n % i === 0) return false;
+      }
+      return true;
+    }
+
+    function findHighPrime(start) {
+      let num = start;
+      while (!isPrime(num)) {
+        num++;
+      }
+      return num;
+    }
+
+    const start = 10_000_000;
+    const prime = findHighPrime(start);
+    document.getElementById("output").textContent = `First prime ≥ ${start} is ${prime}`;
+  </script>
+</body>
+</html>
