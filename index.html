@@ -1,51 +1,997 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="index, follow" />
-  <title>High Prime Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="index, follow"/>
+  <title>Advanced Prime Guessing Game with Neural Math Legos</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       padding: 2rem;
-      background: #f4f4f4;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #333;
+      min-height: 100vh;
     }
-    #output {
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 2.5rem;
+    }
+    
+    h2 {
+      color: #34495e;
+      margin-top: 2rem;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 0.5rem;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    
+    input, button, select {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    button:hover {
+      background: #5a67d8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    #numberDisplay {
       font-size: 1.5rem;
+      font-weight: bold;
+      color: #2c3e50;
+      margin: 1rem 0;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      word-break: break-all;
+    }
+    
+    .score-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .score-item {
+      background: #f0f0f0;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .score-item h3 {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    
+    .score-item p {
+      margin: 0.5rem 0 0 0;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    #output {
       margin-top: 1rem;
-      color: #007700;
+      padding: 1rem;
+      background: #fff;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+    
+    .lego-categories {
+      margin-bottom: 2rem;
+    }
+    
+    .lego-category {
+      margin-bottom: 1.5rem;
+    }
+    
+    .lego-category h3 {
+      color: #555;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    
+    .lego-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .lego {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      background: #e0e0e0;
+      border: 2px solid #b0b0b0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+      position: relative;
+    }
+    
+    .lego:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .lego.selected {
+      background: #667eea !important;
+      color: white;
+      border-color: #5a67d8;
+    }
+    
+    .lego.neural {
+      background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      border: none;
+    }
+    
+    .lego.advanced {
+      background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      border: none;
+    }
+    
+    .lego.fine {
+      background: linear-gradient(45deg, #43e97b 0%, #38f9d7 100%);
+      color: white;
+      border: none;
+    }
+    
+    .effectiveness {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ff6b6b;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    
+    .test-results {
+      margin-top: 2rem;
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    
+    .test-result {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .test-result:last-child {
+      border-bottom: none;
+    }
+    
+    .neural-status {
+      background: #2c3e50;
+      color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+    
+    .history-graph {
+      margin-top: 2rem;
+      height: 200px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .graph-bar {
+      position: absolute;
+      bottom: 0;
+      width: 20px;
+      background: #667eea;
+      transition: height 0.3s ease;
     }
   </style>
 </head>
 <body>
-  <h1>High Prime Generator</h1>
-  <p>This page computes a large prime number when loaded.</p>
-  <div id="output">Calculating...</div>
+  <div class="container">
+    <h1>🧮 Advanced Prime Guessing Game</h1>
+    
+    <div class="controls">
+      <label for="digits">Number of digits (1-100):</label>
+      <input type="number" id="digits" value="5" min="1" max="100"/>
+      <button onclick="generateNumber()">Generate Odd Number</button>
+    </div>
+    
+    <div id="numberDisplay">Click "Generate Odd Number" to start</div>
+    
+    <div class="controls">
+      <button onclick="guess(true)" style="background: #27ae60;">Guess Prime</button>
+      <button onclick="guess(false)" style="background: #e74c3c;">Guess Composite</button>
+    </div>
+    
+    <div class="score-container">
+      <div class="score-item">
+        <h3>Total Score</h3>
+        <p id="score">0</p>
+      </div>
+      <div class="score-item">
+        <h3>Accuracy</h3>
+        <p id="accuracy">0%</p>
+      </div>
+      <div class="score-item">
+        <h3>Streak</h3>
+        <p id="streak">0</p>
+      </div>
+      <div class="score-item">
+        <h3>Neural Confidence</h3>
+        <p id="neuralConfidence">0%</p>
+      </div>
+    </div>
+    
+    <div id="output"></div>
+
+    <h2>Build Your Test with Math Legos</h2>
+    
+    <div class="lego-categories">
+      <div class="lego-category">
+        <h3>🔢 Basic Divisibility Tests</h3>
+        <div class="lego-container" id="basicLegos"></div>
+      </div>
+      
+      <div class="lego-category">
+        <h3>⚡ Advanced Primality Tests</h3>
+        <div class="lego-container" id="advancedLegos"></div>
+      </div>
+      
+      <div class="lego-category">
+        <h3>🎯 Fine-Grained Tests</h3>
+        <div class="lego-container" id="fineLegos"></div>
+      </div>
+      
+      <div class="lego-category">
+        <h3>🧠 Neural & Creative Tests</h3>
+        <div class="lego-container" id="neuralLegos"></div>
+      </div>
+    </div>
+    
+    <button onclick="runCustomTest()" style="margin-top: 1rem; background: #9b59b6;">Run Custom Test</button>
+    
+    <div id="neuralStatus" class="neural-status" style="display: none;"></div>
+    
+    <h2>Test Effectiveness Rankings</h2>
+    <div id="testResults" class="test-results"></div>
+    
+    <h2>Guess History</h2>
+    <div id="historyGraph" class="history-graph"></div>
+  </div>
 
   <script>
-    function isPrime(n) {
-      if (n < 2) return false;
-      if (n === 2) return true;
-      if (n % 2 === 0) return false;
-      for (let i = 3; i <= Math.sqrt(n); i += 2) {
-        if (n % i === 0) return false;
+    // Core game state
+    let currentNumber = 0n;
+    let score = 0;
+    let totalGuesses = 0;
+    let correctGuesses = 0;
+    let streak = 0;
+    let history = [];
+    let testEffectiveness = {};
+    
+    // Neural network state
+    let neuralNetwork = {
+      weights: Array(10).fill(0).map(() => Math.random() - 0.5),
+      bias: 0,
+      learningRate: 0.1,
+      trainingData: []
+    };
+    
+    // Define all lego tests with categories
+    const basicLegos = [
+      { name: "÷2 (Even)", test: n => n % 2n === 0n },
+      { name: "÷3", test: n => n % 3n === 0n },
+      { name: "÷5", test: n => n % 5n === 0n },
+      { name: "÷7", test: n => n % 7n === 0n },
+      { name: "÷11", test: n => n % 11n === 0n },
+      { name: "÷13", test: n => n % 13n === 0n },
+      { name: "Digit Sum ÷3", test: n => digitSum(n) % 3 === 0 },
+      { name: "Digit Sum ÷9", test: n => digitSum(n) % 9 === 0 },
+      { name: "Last 2 Digits ÷4", test: n => BigInt(n.toString().slice(-2) || "0") % 4n === 0n },
+      { name: "Last 3 Digits ÷8", test: n => BigInt(n.toString().slice(-3) || "0") % 8n === 0n }
+    ];
+    
+    const advancedLegos = [
+      { name: "Miller-Rabin (a=2)", test: n => !millerRabin(n, 2n) },
+      { name: "Miller-Rabin (a=3)", test: n => !millerRabin(n, 3n) },
+      { name: "Miller-Rabin (a=5)", test: n => !millerRabin(n, 5n) },
+      { name: "Miller-Rabin (a=7)", test: n => !millerRabin(n, 7n) },
+      { name: "Fermat (a=2)", test: n => n > 2n && modPow(2n, n - 1n, n) !== 1n },
+      { name: "Fermat (a=3)", test: n => n > 3n && modPow(3n, n - 1n, n) !== 1n },
+      { name: "Solovay-Strassen", test: n => !solovayStrassen(n) },
+      { name: "Trial ÷ ≤100", test: n => trialDivision(n, 100) },
+      { name: "Trial ÷ ≤1000", test: n => trialDivision(n, 1000) },
+      { name: "Small Prime Sieve", test: n => smallPrimeSieve(n) }
+    ];
+    
+    const fineLegos = [
+      { name: "6k±1 Form", test: n => n > 3n && (n % 6n !== 1n && n % 6n !== 5n) },
+      { name: "Sophie Germain Check", test: n => !isSophieGermainCandidate(n) },
+      { name: "Twin Prime Gap", test: n => !checkTwinPrimeGap(n) },
+      { name: "Goldbach Weakness", test: n => checkGoldbachWeakness(n) },
+      { name: "Quadratic Residue", test: n => !checkQuadraticResidue(n) },
+      { name: "Carmichael Test", test: n => isCarmichaelNumber(n) },
+      { name: "Perfect Square + 1", test: n => isPerfectSquarePlusOne(n) },
+      { name: "Mersenne Form", test: n => !isMersenneForm(n) },
+      { name: "Digital Root = 3,6,9", test: n => [3, 6, 9].includes(digitalRoot(n)) },
+      { name: "Palindrome Weakness", test: n => isPalindromeWeakness(n) }
+    ];
+    
+    const neuralLegos = [
+      { name: "🧠 Neural Net Prediction", test: n => neuralPredict(n) > 0.5 },
+      { name: "🎲 Entropy Analysis", test: n => entropyTest(n) },
+      { name: "🌀 Chaos Function", test: n => chaosTest(n) },
+      { name: "📊 Statistical Anomaly", test: n => statisticalAnomalyTest(n) },
+      { name: "🔮 Pattern Recognition", test: n => patternRecognitionTest(n) },
+      { name: "🎯 Digit Distribution", test: n => digitDistributionTest(n) },
+      { name: "⚡ Quantum-Inspired", test: n => quantumInspiredTest(n) },
+      { name: "🧬 Genetic Algorithm", test: n => geneticTest(n) },
+      { name: "🌊 Wave Function", test: n => waveFunctionTest(n) },
+      { name: "🎨 Fractal Dimension", test: n => fractalDimensionTest(n) }
+    ];
+    
+    // Initialize test effectiveness tracking
+    [...basicLegos, ...advancedLegos, ...fineLegos, ...neuralLegos].forEach(lego => {
+      testEffectiveness[lego.name] = { correct: 0, total: 0 };
+    });
+    
+    // Core number generation (only odd numbers)
+    function generateNumber() {
+      const digits = Math.min(100, Math.max(1, parseInt(document.getElementById("digits").value)));
+      let num = Math.random() < 0.5 ? "1" : (3 + Math.floor(Math.random() * 3) * 2).toString();
+      
+      for (let i = 1; i < digits; i++) {
+        num += Math.floor(Math.random() * 10);
       }
+      
+      currentNumber = BigInt(num);
+      
+      // Ensure the number is odd
+      if (currentNumber % 2n === 0n) {
+        currentNumber += 1n;
+      }
+      
+      document.getElementById("numberDisplay").textContent = `Number: ${currentNumber}`;
+      document.getElementById("output").textContent = "";
+      
+      // Train neural network with historical data
+      if (neuralNetwork.trainingData.length > 0) {
+        trainNeuralNetwork();
+      }
+    }
+    
+    // Guessing logic
+    function guess(isPrimeGuess) {
+      const actuallyPrime = isProbablyPrime(currentNumber);
+      const correct = (actuallyPrime && isPrimeGuess) || (!actuallyPrime && !isPrimeGuess);
+      
+      totalGuesses++;
+      if (correct) {
+        correctGuesses++;
+        score++;
+        streak++;
+      } else {
+        score--;
+        streak = 0;
+      }
+      
+      // Update neural network training data
+      neuralNetwork.trainingData.push({
+        features: extractFeatures(currentNumber),
+        label: actuallyPrime ? 1 : 0
+      });
+      
+      // Limit training data size
+      if (neuralNetwork.trainingData.length > 100) {
+        neuralNetwork.trainingData.shift();
+      }
+      
+      updateDisplay(correct, isPrimeGuess, actuallyPrime);
+      addToHistory(correct);
+    }
+    
+    // Feature extraction for neural network
+    function extractFeatures(n) {
+      const str = n.toString();
+      return [
+        Math.log10(Number(n) + 1) / 100, // Normalized log scale
+        Number(n % 10n) / 10, // Last digit
+        digitSum(n) / (str.length * 9), // Normalized digit sum
+        str.length / 100, // Normalized length
+        Number(n % 6n) / 6, // Mod 6 value
+        digitalRoot(n) / 9, // Digital root
+        [...str].filter(d => "13579".includes(d)).length / str.length, // Odd digit ratio
+        Math.sin(Number(n % 100n)), // Periodic feature
+        Math.cos(Number(n % 100n)), // Another periodic feature
+        entropy(str) // Digit entropy
+      ];
+    }
+    
+    // Neural network prediction
+    function neuralPredict(n) {
+      const features = extractFeatures(n);
+      let sum = neuralNetwork.bias;
+      
+      for (let i = 0; i < features.length; i++) {
+        sum += features[i] * neuralNetwork.weights[i];
+      }
+      
+      return 1 / (1 + Math.exp(-sum)); // Sigmoid activation
+    }
+    
+    // Train neural network with one epoch
+    function trainNeuralNetwork() {
+      const data = neuralNetwork.trainingData;
+      if (data.length === 0) return;
+      
+      // Simple gradient descent
+      for (let sample of data) {
+        // Use the stored features directly for prediction
+        let sum = neuralNetwork.bias;
+        for (let i = 0; i < sample.features.length; i++) {
+          sum += sample.features[i] * neuralNetwork.weights[i];
+        }
+        const prediction = 1 / (1 + Math.exp(-sum)); // Sigmoid
+        const error = sample.label - prediction;
+        
+        // Update weights
+        for (let i = 0; i < neuralNetwork.weights.length; i++) {
+          neuralNetwork.weights[i] += neuralNetwork.learningRate * error * sample.features[i];
+        }
+        
+        neuralNetwork.bias += neuralNetwork.learningRate * error;
+      }
+      
+      // Update neural confidence display
+      const confidence = Math.round(Math.abs(neuralPredict(currentNumber) - 0.5) * 200);
+      document.getElementById("neuralConfidence").textContent = `${confidence}%`;
+    }
+    
+    // Primality testing functions
+    function isProbablyPrime(n) {
+      if (n < 2n) return false;
+      if (n === 2n || n === 3n) return true;
+      if (n % 2n === 0n) return false;
+      
+      // Run multiple Miller-Rabin tests for high confidence
+      const witnesses = [2n, 3n, 5n, 7n, 11n, 13n, 17n, 19n, 23n, 29n, 31n, 37n];
+      for (let a of witnesses) {
+        if (a >= n) continue;
+        if (!millerRabin(n, a)) return false;
+      }
+      
       return true;
     }
-
-    function findHighPrime(start) {
-      let num = start;
-      while (!isPrime(num)) {
-        num++;
+    
+    function modPow(base, exp, mod) {
+      let result = 1n;
+      base = base % mod;
+      while (exp > 0n) {
+        if (exp % 2n === 1n) result = (result * base) % mod;
+        exp = exp / 2n;
+        base = (base * base) % mod;
       }
-      return num;
+      return result;
     }
-
-    const start = 10_000_000;
-    const prime = findHighPrime(start);
-    document.getElementById("output").textContent = `First prime ≥ ${start} is ${prime}`;
+    
+    function millerRabin(n, a) {
+      if (n === 2n) return true;
+      if (n < 2n || n % 2n === 0n) return false;
+      
+      let d = n - 1n;
+      let s = 0;
+      while (d % 2n === 0n) {
+        d /= 2n;
+        s++;
+      }
+      
+      let x = modPow(a, d, n);
+      if (x === 1n || x === n - 1n) return true;
+      
+      for (let r = 1; r < s; r++) {
+        x = modPow(x, 2n, n);
+        if (x === n - 1n) return true;
+      }
+      
+      return false;
+    }
+    
+    function solovayStrassen(n) {
+      if (n < 2n) return false;
+      if (n === 2n) return true;
+      if (n % 2n === 0n) return false;
+      
+      // Simplified Solovay-Strassen test - use BigInt for random number
+      const randomNum = BigInt(Math.floor(Math.random() * Number(n - 3n)));
+      const a = 2n + randomNum;
+      const jacobi = jacobiSymbol(a, n);
+      const mod = modPow(a, (n - 1n) / 2n, n);
+      
+      // Convert jacobi to BigInt for comparison
+      const jacobiMod = BigInt(jacobi);
+      return (jacobiMod + n) % n === mod;
+    }
+    
+    function jacobiSymbol(a, n) {
+      if (n <= 0n || n % 2n === 0n) return 0;
+      
+      a = a % n;
+      let result = 1;
+      
+      while (a !== 0n) {
+        while (a % 2n === 0n) {
+          a /= 2n;
+          if (n % 8n === 3n || n % 8n === 5n) result = -result;
+        }
+        
+        [a, n] = [n, a];
+        if (a % 4n === 3n && n % 4n === 3n) result = -result;
+        a = a % n;
+      }
+      
+      return n === 1n ? result : 0;
+    }
+    
+    // Helper functions
+    function digitSum(n) {
+      return n.toString().split('').reduce((sum, d) => sum + parseInt(d), 0);
+    }
+    
+    function digitalRoot(n) {
+      let sum = digitSum(n);
+      while (sum >= 10) {
+        sum = sum.toString().split('').reduce((s, d) => s + parseInt(d), 0);
+      }
+      return sum;
+    }
+    
+    function entropy(str) {
+      const freq = {};
+      for (let char of str) {
+        freq[char] = (freq[char] || 0) + 1;
+      }
+      
+      let ent = 0;
+      const len = str.length;
+      for (let count of Object.values(freq)) {
+        const p = count / len;
+        ent -= p * Math.log2(p);
+      }
+      
+      return ent;
+    }
+    
+    function trialDivision(n, limit) {
+      for (let i = 3n; i <= BigInt(limit); i += 2n) {
+        if (n % i === 0n && n !== i) return true;
+      }
+      return false;
+    }
+    
+    function smallPrimeSieve(n) {
+      const primes = [3n, 5n, 7n, 11n, 13n, 17n, 19n, 23n, 29n, 31n, 37n, 41n, 43n, 47n, 53n, 59n, 61n, 67n, 71n, 73n, 79n, 83n, 89n, 97n];
+      for (let p of primes) {
+        if (n !== p && n % p === 0n) return true;
+      }
+      return false;
+    }
+    
+    // Advanced test functions
+    function isSophieGermainCandidate(n) {
+      // Check if 2n + 1 might also be prime
+      return isProbablyPrime(n) && isProbablyPrime(2n * n + 1n);
+    }
+    
+    function checkTwinPrimeGap(n) {
+      return isProbablyPrime(n - 2n) || isProbablyPrime(n + 2n);
+    }
+    
+    function checkGoldbachWeakness(n) {
+      if (n < 9n) return false;
+      if (n % 2n === 1n) {
+        // Check if n can be written as prime + 2*(square)
+        for (let i = 1n; 2n * i * i < n; i++) {
+          if (isProbablyPrime(n - 2n * i * i)) return false;
+        }
+        return true;
+      }
+      return false;
+    }
+    
+    function checkQuadraticResidue(n) {
+      if (n < 5n) return true;
+      // Check if -1 is a quadratic residue mod n
+      return modPow(n - 1n, (n - 1n) / 2n, n) === 1n;
+    }
+    
+    function isCarmichaelNumber(n) {
+      if (isProbablyPrime(n)) return false;
+      
+      // Simplified check: test a few bases
+      for (let a = 2n; a < 10n && a < n; a++) {
+        if (gcd(a, n) === 1n && modPow(a, n - 1n, n) !== 1n) {
+          return false;
+        }
+      }
+      
+      return true;
+    }
+    
+    function gcd(a, b) {
+      while (b !== 0n) {
+        [a, b] = [b, a % b];
+      }
+      return a;
+    }
+    
+    function isPerfectSquarePlusOne(n) {
+      const sqrt = BigInt(Math.floor(Math.sqrt(Number(n - 1n))));
+      return sqrt * sqrt === n - 1n;
+    }
+    
+    function isMersenneForm(n) {
+      // Check if n = 2^p - 1 for some p
+      let m = n + 1n;
+      while (m > 1n && m % 2n === 0n) {
+        m /= 2n;
+      }
+      return m === 1n;
+    }
+    
+    function isPalindromeWeakness(n) {
+      const str = n.toString();
+      const isPalindrome = str === str.split('').reverse().join('');
+      return isPalindrome && str.length > 2;
+    }
+    
+    // Creative test functions
+    function entropyTest(n) {
+      const ent = entropy(n.toString());
+      return ent < 2.5; // Low entropy might indicate patterns
+    }
+    
+    function chaosTest(n) {
+      // Use logistic map iteration - safely convert to Number
+      let x = Number(n % 1000n) / 1000;
+      for (let i = 0; i < 20; i++) {
+        x = 3.9 * x * (1 - x);
+      }
+      return x > 0.5;
+    }
+    
+    function statisticalAnomalyTest(n) {
+      const digits = n.toString().split('').map(Number);
+      const mean = digits.reduce((a, b) => a + b) / digits.length;
+      const variance = digits.reduce((sum, d) => sum + Math.pow(d - mean, 2), 0) / digits.length;
+      return variance < 5; // Low variance might indicate non-randomness
+    }
+    
+    function patternRecognitionTest(n) {
+      const str = n.toString();
+      // Check for repeating patterns
+      for (let len = 2; len <= Math.floor(str.length / 2); len++) {
+        for (let start = 0; start <= str.length - 2 * len; start++) {
+          const pattern = str.substring(start, start + len);
+          if (str.indexOf(pattern, start + len) !== -1) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    
+    function digitDistributionTest(n) {
+      const digits = n.toString();
+      const counts = Array(10).fill(0);
+      for (let d of digits) {
+        counts[parseInt(d)]++;
+      }
+      
+      // Chi-square test for uniformity
+      const expected = digits.length / 10;
+      const chiSquare = counts.reduce((sum, count) => {
+        return sum + Math.pow(count - expected, 2) / expected;
+      }, 0);
+      
+      return chiSquare > 16.92; // 95% confidence level for 9 degrees of freedom
+    }
+    
+    function quantumInspiredTest(n) {
+      // Simulate quantum superposition collapse - safe BigInt conversion
+      const measurements = [];
+      for (let i = 0; i < 10; i++) {
+        const phase = Math.sin(Number(n % (100n + BigInt(i))) * Math.PI / 50);
+        measurements.push(phase > 0);
+      }
+      return measurements.filter(m => m).length > 6;
+    }
+    
+    function geneticTest(n) {
+      // Simple genetic fitness function
+      const genome = n.toString().split('').map(Number);
+      let fitness = 0;
+      
+      for (let i = 0; i < genome.length - 1; i++) {
+        fitness += Math.abs(genome[i] - genome[i + 1]);
+      }
+      
+      return fitness / genome.length < 3;
+    }
+    
+    function waveFunctionTest(n) {
+      // Wave interference pattern - safe Number conversion
+      const x = Number(n % 1000n) / 100;
+      const wave1 = Math.sin(x);
+      const wave2 = Math.sin(x * 1.618); // Golden ratio frequency
+      const interference = Math.abs(wave1 + wave2);
+      
+      return interference > 1.5;
+    }
+    
+    function fractalDimensionTest(n) {
+      // Box-counting dimension estimation
+      const str = n.toString();
+      const scales = [1, 2, 4, 8].filter(s => s < str.length);
+      const counts = scales.map(scale => {
+        const boxes = new Set();
+        for (let i = 0; i < str.length; i += scale) {
+          boxes.add(str.substring(i, Math.min(i + scale, str.length)));
+        }
+        return boxes.size;
+      });
+      
+      if (counts.length < 2) return false;
+      
+      // Estimate fractal dimension
+      const logScales = scales.map(Math.log);
+      const logCounts = counts.map(Math.log);
+      const dimension = (logCounts[logCounts.length - 1] - logCounts[0]) / 
+                       (logScales[0] - logScales[logScales.length - 1]);
+      
+      return dimension < 0.8;
+    }
+    
+    // Custom test runner
+    function runCustomTest() {
+      const selected = document.querySelectorAll(".lego.selected");
+      let compositeLikelihood = 0;
+      let testsRun = 0;
+      
+      const results = [];
+      
+      selected.forEach(el => {
+        const category = el.dataset.category;
+        const index = parseInt(el.dataset.index);
+        let lego;
+        
+        switch(category) {
+          case 'basic': lego = basicLegos[index]; break;
+          case 'advanced': lego = advancedLegos[index]; break;
+          case 'fine': lego = fineLegos[index]; break;
+          case 'neural': lego = neuralLegos[index]; break;
+        }
+        
+        if (lego) {
+          const testResult = lego.test(currentNumber);
+          if (testResult) {
+            compositeLikelihood++;
+            results.push(`❌ ${lego.name}: Indicates COMPOSITE`);
+            // Add visual feedback
+            el.style.background = "#e74c3c";
+            setTimeout(() => {
+              el.style.background = "";
+            }, 2000);
+          } else {
+            results.push(`✅ ${lego.name}: Passed (not composite by this test)`);
+            // Add visual feedback
+            el.style.background = "#27ae60";
+            setTimeout(() => {
+              el.style.background = "";
+            }, 2000);
+          }
+          testsRun++;
+        }
+      });
+      
+      const actuallyPrime = isProbablyPrime(currentNumber);
+      const prediction = compositeLikelihood === 0 ? "Likely PRIME ✨" : "Likely COMPOSITE 🔢";
+      const correct = (actuallyPrime && compositeLikelihood === 0) || (!actuallyPrime && compositeLikelihood > 0);
+      
+      // Update test effectiveness
+      selected.forEach(el => {
+        const category = el.dataset.category;
+        const index = parseInt(el.dataset.index);
+        let lego;
+        
+        switch(category) {
+          case 'basic': lego = basicLegos[index]; break;
+          case 'advanced': lego = advancedLegos[index]; break;
+          case 'fine': lego = fineLegos[index]; break;
+          case 'neural': lego = neuralLegos[index]; break;
+        }
+        
+        if (lego) {
+          testEffectiveness[lego.name].total++;
+          const testResult = lego.test(currentNumber);
+          // A test is "correct" if it correctly identifies composite (returns true for composite)
+          // or doesn't flag a prime (returns false for prime)
+          const testCorrect = (!actuallyPrime && testResult) || (actuallyPrime && !testResult);
+          if (testCorrect) {
+            testEffectiveness[lego.name].correct++;
+          }
+        }
+      });
+      
+      let output = `<strong>Custom Test Result: ${prediction}</strong><br>`;
+      output += `<strong>Actual: ${actuallyPrime ? "PRIME" : "COMPOSITE"} - ${correct ? "✓ Your tests were right!" : "✗ Your tests were wrong"}</strong><br>`;
+      output += `Tests run: ${testsRun}, Composite indicators: ${compositeLikelihood}<br><br>`;
+      output += `<small>${results.join('<br>')}</small>`;
+      
+      document.getElementById("output").innerHTML = output;
+      
+      updateTestRankings();
+    }
+    
+    // UI update functions
+    function updateDisplay(correct, guess, actual) {
+      document.getElementById("score").textContent = score;
+      document.getElementById("accuracy").textContent = totalGuesses > 0 ? 
+        `${Math.round(correctGuesses / totalGuesses * 100)}%` : "0%";
+      document.getElementById("streak").textContent = streak;
+      
+      const result = correct ? 
+        `<span style="color: #27ae60;">✓ Correct!</span>` : 
+        `<span style="color: #e74c3c;">✗ Wrong!</span>`;
+      
+      const explanation = `You guessed ${guess ? "Prime" : "Composite"}. ` +
+                         `The number is actually ${actual ? "Prime" : "Composite"}.`;
+      
+      document.getElementById("output").innerHTML = `${result}<br>${explanation}`;
+      
+      // Show neural network status if it made a prediction
+      if (neuralNetwork.trainingData.length > 5) {
+        const neuralPrediction = neuralPredict(currentNumber);
+        const neuralGuess = neuralPrediction > 0.5;
+        const neuralCorrect = neuralGuess === actual;
+        
+        document.getElementById("neuralStatus").style.display = "block";
+        document.getElementById("neuralStatus").innerHTML = 
+          `Neural Network Prediction: ${neuralPrediction.toFixed(3)} ` +
+          `(${neuralGuess ? "Prime" : "Composite"}) - ` +
+          `${neuralCorrect ? "Correct" : "Wrong"}`;
+      }
+    }
+    
+    function updateTestRankings() {
+      const rankings = Object.entries(testEffectiveness)
+        .filter(([_, stats]) => stats.total > 0)
+        .map(([name, stats]) => ({
+          name,
+          effectiveness: stats.correct / stats.total,
+          total: stats.total
+        }))
+        .sort((a, b) => b.effectiveness - a.effectiveness)
+        .slice(0, 10);
+      
+      let html = "";
+      rankings.forEach((test, index) => {
+        html += `<div class="test-result">
+          <span>${index + 1}. ${test.name}</span>
+          <span>${Math.round(test.effectiveness * 100)}% (${test.total} tests)</span>
+        </div>`;
+      });
+      
+      document.getElementById("testResults").innerHTML = html || "No test data yet";
+    }
+    
+    function addToHistory(correct) {
+      history.push(correct);
+      if (history.length > 50) history.shift();
+      
+      const graph = document.getElementById("historyGraph");
+      graph.innerHTML = "";
+      
+      history.forEach((result, index) => {
+        const bar = document.createElement("div");
+        bar.className = "graph-bar";
+        bar.style.left = `${index * 22}px`;
+        bar.style.height = result ? "100%" : "50%";
+        bar.style.background = result ? "#27ae60" : "#e74c3c";
+        graph.appendChild(bar);
+      });
+    }
+    
+    // Initialize UI
+    function setupLegos() {
+      renderLegoCategory("basicLegos", basicLegos, "basic");
+      renderLegoCategory("advancedLegos", advancedLegos, "advanced");
+      renderLegoCategory("fineLegos", fineLegos, "fine");
+      renderLegoCategory("neuralLegos", neuralLegos, "neural");
+    }
+    
+    function renderLegoCategory(containerId, legos, category) {
+      const container = document.getElementById(containerId);
+      
+      legos.forEach((lego, index) => {
+        const div = document.createElement("div");
+        div.className = `lego ${category}`;
+        div.textContent = lego.name;
+        div.dataset.category = category;
+        div.dataset.index = index;
+        div.onclick = () => div.classList.toggle("selected");
+        
+        // Add effectiveness indicator if data exists
+        const stats = testEffectiveness[lego.name];
+        if (stats && stats.total > 0) {
+          const effectiveness = Math.round(stats.correct / stats.total * 100);
+          const indicator = document.createElement("div");
+          indicator.className = "effectiveness";
+          indicator.textContent = effectiveness;
+          div.appendChild(indicator);
+        }
+        
+        container.appendChild(div);
+      });
+    }
+    
+    // Initialize the game
+    setupLegos();
+    generateNumber();
   </script>
 </body>
 </html>
